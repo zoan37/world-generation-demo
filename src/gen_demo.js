@@ -49,10 +49,11 @@ export function startGenDemo() {
     // scene.add(directionalLight);
 
     const container = document.getElementById('container');
-
-    // TODO: need a better solution, because with React.StrictMode, this code will run twice
-    // TODO: look into React Three Fiber 
-    container.innerHTML = ''; // reset because useEffect / Vite will rerun this code
+    
+    // Reset container because useEffect / Vite will rerun this code.
+    // If React.StrictMode is used, this code will run twice.
+    // TODO: look into React Three Fiber, maybe help with this
+    container.innerHTML = '';
 
     THREE.ColorManagement.enabled = true;
 
@@ -104,7 +105,7 @@ export function startGenDemo() {
 
     let worldOctree = new Octree();
 
-    // TODO: change height of the ground based on the loaded environment
+    // TODO: change height off the ground based on the loaded environment
     const CAPSULE_HEIGHT_OFF_GROUND = 75;
     const CAPSULE_Y1 = 0.35 + CAPSULE_HEIGHT_OFF_GROUND;
     const CAPSULE_Y2 = 1 + CAPSULE_HEIGHT_OFF_GROUND;
