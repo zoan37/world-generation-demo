@@ -427,17 +427,16 @@ export function startGenDemo() {
             numInferenceSteps: 16,
         });
 
-        console.log('generate3DObject', output);
+        console.log('generate3DObject output', output);
 
         console.log('output[0].uri', output[0].uri)
-
-        const filename = `${inputText}.ply`;
-
-        const data_uri = output[0].uri;
 
         // TODO: consider adding feature to save generated objects
         // save to file
         /*
+        const filename = `${inputText}.ply`;
+        const data_uri = output[0].uri;
+
         const link = document.createElement('a');
         link.download = filename;
         link.href = data_uri;
