@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "three": "^0.154.0",
+    "window.ai": "^0.2.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",
