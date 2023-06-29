@@ -15,6 +15,7 @@ function GenerateInput() {
             await window.generateNewEnvironment(envDesc);
         } catch (e) {
             console.error(e);
+            alert(e);
         }
 
         setIsEnvGenerating(false);
@@ -28,6 +29,7 @@ function GenerateInput() {
             await window.generateNewObject(objDesc);
         } catch (e) {
             console.error(e);
+            alert(e);
         }
 
         setIsObjGenerating(false);
