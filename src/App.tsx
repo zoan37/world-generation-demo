@@ -19,6 +19,8 @@ function App() {
         MOUSE to look around and to throw balls
         <br />
         WASD to move and SPACE to jump
+        <br />
+        ESC to see your mouse
       </div>
       <GenerateInput />
       <div>
