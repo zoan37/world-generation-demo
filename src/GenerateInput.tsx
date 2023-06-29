@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './GenerateInput.css'
 
 function GenerateInput() {
@@ -6,10 +6,6 @@ function GenerateInput() {
     const [objDesc, setObjDesc] = useState("");
     const [isEnvGenerating, setIsEnvGenerating] = useState(false);
     const [isObjGenerating, setIsObjGenerating] = useState(false);
-
-    useEffect(() => {
-
-    }, []);
 
     async function submitEnvironmentDescription() {
         setIsEnvGenerating(true);

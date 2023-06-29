@@ -2,11 +2,10 @@ import * as THREE from 'three';
 import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
 import GUI from 'three/addons/libs/lil-gui.module.min.js';
 import Stats from 'three/addons/libs/stats.module.js';
-
 import { Octree } from 'three/addons/math/Octree.js';
 import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
-
 import { Capsule } from 'three/addons/math/Capsule.js';
+import { getWindowAI } from 'window.ai';
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -404,10 +403,11 @@ export function startGenDemo() {
 
     }
 
-    // TODO: handle case of user spamming generate calls, should wait some time for generate to finish
     const generate3DObject = async (inputText) => {
+        let ai;
         try {
-            if (!window.ai) {
+            ai = await getWindowAI();
+            if (!ai) {
                 alert('window.ai not found');
                 throw new Error('window.ai not found');
             }
@@ -417,12 +417,11 @@ export function startGenDemo() {
 
         console.log('generating...')
 
-        // const inputText = 'a floating island';
         const promptObject = { prompt: inputText };
 
         console.log('promptObject', promptObject);
 
-        const output = await window.ai.BETA_generate3DObject(promptObject, {
+        const output = await ai.BETA_generate3DObject(promptObject, {
             extension: "ply",
             numInferenceSteps: 16,
         });
@@ -435,13 +434,16 @@ export function startGenDemo() {
 
         const data_uri = output[0].uri;
 
+        // TODO: consider adding feature to save generated objects
         // save to file
+        /*
         const link = document.createElement('a');
         link.download = filename;
         link.href = data_uri;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        */
 
         return output[0].uri;
     };
@@ -463,25 +465,6 @@ export function startGenDemo() {
 
     window.saveEnvironmentPly = saveEnvironmentPly;
 
-    function throwObject() {
-        /*
-        const sphere = spheres[sphereIdx];
-
-        camera.getWorldDirection(playerDirection);
-
-        sphere.collider.center.copy(playerCollider.end).addScaledVector(playerDirection, playerCollider.radius * 1.5);
-
-        // throw the ball with more force if we hold the button longer, and if we move forward
-
-        const impulse = 15 + 30 * (1 - Math.exp((mouseTime - performance.now()) * 0.001));
-
-        sphere.velocity.copy(playerDirection).multiplyScalar(impulse);
-        sphere.velocity.addScaledVector(playerVelocity, 2);
-
-        sphereIdx = (sphereIdx + 1) % spheres.length;
-        */
-    }
-
     window.generateNewObject = generateNewObject;
 
     async function generateNewObject(inputText) {
@@ -494,68 +477,22 @@ export function startGenDemo() {
 
             geometry.computeVertexNormals();
 
-            // const material = new THREE.MeshStandardMaterial({ color: 0x009cff, flatShading: true });
-            // var material = new THREE.MeshBasicMaterial( { color: 0xffffff, specular: 0x111111, shininess: 200, vertexColors: THREE.VertexColors} );
             var material = new THREE.MeshStandardMaterial({ 
-                vertexColors: true,
-                // roughness: 0
+                vertexColors: true
             });
             const mesh = new THREE.Mesh(geometry, material);
 
-            // mesh.position.y = - 0.2;
-            // mesh.position.z = 0.3;
             mesh.rotation.x = - Math.PI / 2;
             mesh.scale.multiplyScalar(1);
 
             mesh.castShadow = true;
             mesh.receiveShadow = true;
 
-            // sphere.collider.center.copy(playerCollider.end).addScaledVector(playerDirection, playerCollider.radius * 1.5);
-
-            // mesh.position.copy(playerCollider.end);
-
             // place mesh in front of player
             const playerDirection = getForwardVector();
             mesh.position.copy(playerCollider.end).addScaledVector(playerDirection, playerCollider.radius * 3);
 
             scene.add(mesh);
-
-            // TODO: add object to octree so player can collide with it
-
-            /*
-            const meshScene = new THREE.Scene();
-
-            currentEnvironmentScene = meshScene;
-
-            meshScene.add(mesh);
-
-            scene.add(meshScene);
-
-            // scene.add(mesh);
-
-            console.log('mesh from ply', mesh);
-
-            worldOctree.fromGraphNode(meshScene);
-
-            meshScene.traverse(child => {
-
-                if (child.isMesh) {
-
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-
-                    if (child.material.map) {
-
-                        child.material.map.anisotropy = 4;
-
-                    }
-
-                }
-
-            });
-            */
-
-            // callback();
         });
     }
 
@@ -597,16 +534,11 @@ export function startGenDemo() {
 
             geometry.computeVertexNormals();
 
-            // const material = new THREE.MeshStandardMaterial({ color: 0x009cff, flatShading: true });
-            // var material = new THREE.MeshBasicMaterial( { color: 0xffffff, specular: 0x111111, shininess: 200, vertexColors: THREE.VertexColors} );
             var material = new THREE.MeshStandardMaterial({ 
-                vertexColors: true,
-                // roughness: 0
+                vertexColors: true
             });
             const mesh = new THREE.Mesh(geometry, material);
 
-            // mesh.position.y = - 0.2;
-            // mesh.position.z = 0.3;
             mesh.rotation.x = - Math.PI / 2;
             mesh.scale.multiplyScalar(100);
 
@@ -620,8 +552,6 @@ export function startGenDemo() {
             meshScene.add(mesh);
 
             scene.add(meshScene);
-
-            // scene.add(mesh);
 
             console.log('mesh from ply', mesh);
 
@@ -655,10 +585,7 @@ export function startGenDemo() {
 
         console.log('loading scene');
 
-        // const plyURI = await generate3DObject();
-
         const plyURI = './models/ply/an underwater temple.ply'
-        // const plyURI = './models/ply/floating island with red lava.ply'
 
         loadPlyEnvironment(plyURI, () => {
             octreeHelper = new OctreeHelper(worldOctree);
@@ -668,47 +595,14 @@ export function startGenDemo() {
             const gui = new GUI({ width: 200 });
             gui.add({ debug: false }, 'debug')
                 .onChange(function (value) {
-
                     octreeHelper.visible = value;
-
                 });
 
             animate();
         });
     }
 
-    /*
-    setTimeout(async () => {
-        try {
-            if (!window.ai) {
-                alert('window.ai not found');
-                throw new Error('window.ai not found');
-            }
-        } catch (error) {
-            console.error(error);
-        }
-
-        console.log('generating...')
-
-
-        // Code for streaming a response
-        // from a user's Window AI model
-        await window.ai.generateText(
-            {
-                prompt: "Hello world!"
-            },
-            {
-                onStreamResult: (res) =>
-                    console.log(res.text)
-            }
-        )
-
-    }, 100); // time for window.ai to load
-    */
-
-    setTimeout(async () => {
-        await loadScene();
-    }, 300); // time for window.ai to load
+    loadScene();
 
     function respawnPlayerPosition() {
         playerCollider.start.set(0, CAPSULE_Y1, 0);
