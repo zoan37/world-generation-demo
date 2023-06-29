@@ -2,30 +2,39 @@ import { useEffect, useState } from 'react'
 import './GenerateInput.css'
 
 function GenerateInput() {
-    // define two react state variables, one for the environment description and one for the object description
     const [envDesc, setEnvDesc] = useState("");
     const [objDesc, setObjDesc] = useState("");
+    const [isEnvGenerating, setIsEnvGenerating] = useState(false);
+    const [isObjGenerating, setIsObjGenerating] = useState(false);
 
     useEffect(() => {
 
     }, []);
 
     async function submitEnvironmentDescription() {
+        setIsEnvGenerating(true);
+
         try {
             // @ts-ignore
             await window.generateNewEnvironment(envDesc);
         } catch (e) {
             console.error(e);
         }
+
+        setIsEnvGenerating(false);
     }
 
     async function submitObjectDescription() {
+        setIsObjGenerating(true);
+
         try {
             // @ts-ignore
             await window.generateNewObject(objDesc);
         } catch (e) {
             console.error(e);
         }
+
+        setIsObjGenerating(false);
     }
 
     return (
@@ -38,8 +47,21 @@ function GenerateInput() {
                         onKeyDown={e => { e.stopPropagation(); }}
                     />
                     <button className="btn btn-light" type="button"
-                        onClick={submitEnvironmentDescription}>
-                        Generate Environment
+                        onClick={submitEnvironmentDescription}
+                        disabled={isEnvGenerating}
+                    >
+                        {
+                            !isEnvGenerating ?
+                                (
+                                    <span>
+                                        Generate Environment
+                                    </span>
+                                ) :
+                                (
+                                    <div className="spinner-border spinner-border-sm text-secondary" role="status">
+                                    </div>
+                                )
+                        }
                     </button>
                 </div>
                 <div className="d-flex">
@@ -49,8 +71,21 @@ function GenerateInput() {
                         onKeyDown={e => { e.stopPropagation(); }}
                     />
                     <button className="btn btn-light" type="button"
-                        onClick={submitObjectDescription}>
-                        Generate Object
+                        onClick={submitObjectDescription}
+                        disabled={isObjGenerating}
+                    >
+                        {
+                            !isObjGenerating ?
+                                (
+                                    <span>
+                                        Generate Object
+                                    </span>
+                                ) :
+                                (
+                                    <div className="spinner-border spinner-border-sm text-secondary" role="status">
+                                    </div>
+                                )
+                        }
                     </button>
                 </div>
             </div>
