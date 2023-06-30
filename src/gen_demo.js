@@ -27,7 +27,7 @@ export function startGenDemo() {
     scene.add(fillLight1);
 
     // ambient light
-    // const ambientLight = new THREE.HemisphereLight(0x8dc1de, 0x00668d, 0.5);
+    const ambientLight = new THREE.HemisphereLight(0x8dc1de, 0x00668d, 5);
 
     const directionalLight2 = new THREE.DirectionalLight( 0xffffff, 8 );
     scene.add( directionalLight2 );
