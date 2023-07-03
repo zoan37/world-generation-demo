@@ -109,8 +109,10 @@ export function startGenDemo() {
     const CAPSULE_HEIGHT_OFF_GROUND = 75;
     const CAPSULE_Y1 = 0.35 + CAPSULE_HEIGHT_OFF_GROUND;
     const CAPSULE_Y2 = 1 + CAPSULE_HEIGHT_OFF_GROUND;
+    const INIT_CAPSULE_Y1 = 0.35 - 10;
+    const INIT_CAPSULE_Y2 = 1 - 10;
 
-    const playerCollider = new Capsule(new THREE.Vector3(0, CAPSULE_Y1, 0), new THREE.Vector3(0, CAPSULE_Y2, 0), 0.35);
+    const playerCollider = new Capsule(new THREE.Vector3(0, INIT_CAPSULE_Y1, 0), new THREE.Vector3(0, INIT_CAPSULE_Y2, 0), 0.35);
 
     const playerVelocity = new THREE.Vector3();
     const playerDirection = new THREE.Vector3();
