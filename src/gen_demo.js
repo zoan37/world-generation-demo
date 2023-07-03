@@ -6,12 +6,16 @@ import { Octree } from 'three/addons/math/Octree.js';
 import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
 import { Capsule } from 'three/addons/math/Capsule.js';
 import { getWindowAI } from 'window.ai';
+import { v4 as uuidv4 } from 'uuid';
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function startGenDemo() {
+export function startGenDemo(config) {
+    const setGenerateObjectsHandler = config.setGenerateObjectsHandler;
+
+    const generatedObjects = [];
 
     const clock = new THREE.Clock();
 
@@ -431,22 +435,6 @@ export function startGenDemo() {
 
         console.log('generate3DObject output', output);
 
-        console.log('output[0].uri', output[0].uri)
-
-        // TODO: consider adding feature to save generated objects
-        // save to file
-        /*
-        const filename = `${inputText}.ply`;
-        const data_uri = output[0].uri;
-
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = data_uri;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        */
-
         return output[0].uri;
     };
 
@@ -471,6 +459,14 @@ export function startGenDemo() {
 
     async function generateNewObject(inputText) {
         const plyURI = await generate3DObject(inputText);
+
+        generatedObjects.push({
+            prompt: inputText,
+            plyURI: plyURI,
+            timestamp: Date.now(),
+            id: uuidv4()
+        });
+        setGenerateObjectsHandler(generatedObjects);
 
         const plyLoader = new PLYLoader();
         plyLoader.load(plyURI, function (geometry) {
@@ -501,6 +497,14 @@ export function startGenDemo() {
     async function generateNewEnvironment(inputText) {
 
         const plyURI = await generate3DObject(inputText);
+
+        generatedObjects.push({
+            prompt: inputText,
+            plyURI: plyURI,
+            timestamp: Date.now(),
+            id: uuidv4()
+        });
+        setGenerateObjectsHandler(generatedObjects);
 
         currentEnvironmentPrompt = inputText;
         currentEnvironmentDataURI = plyURI;
