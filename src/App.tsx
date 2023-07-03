@@ -1,12 +1,22 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 // @ts-ignore
 import { startGenDemo } from "./gen_demo.js";
 import GenerateInput from './GenerateInput.tsx';
+import PlyViewer from './PlyViewer.tsx';
 
 function App() {
+  const [generatedObjects, setGeneratedObjects] = useState([]);
+
   useEffect(() => {
-    startGenDemo();
+    startGenDemo({
+      setGenerateObjectsHandler: (objects: any) => {
+        const clonedObjects = objects.slice();
+        
+        setGeneratedObjects(clonedObjects);
+        console.log('setGeneratedObjects', clonedObjects);
+      }
+    });
   }, []);
 
   return (
@@ -22,6 +32,9 @@ function App() {
         <br />
         ESC to see your mouse
       </div>
+      <PlyViewer
+        generatedObjects={generatedObjects}
+      />
       <GenerateInput />
       <div>
         <a className="code-button" target="_blank"

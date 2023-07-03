@@ -11,7 +11,10 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function startGenDemo() {
+export function startGenDemo(config) {
+    const setGenerateObjectsHandler = config.setGenerateObjectsHandler;
+
+    const generatedObjects = [];
 
     const clock = new THREE.Clock();
 
@@ -472,6 +475,13 @@ export function startGenDemo() {
     async function generateNewObject(inputText) {
         const plyURI = await generate3DObject(inputText);
 
+        generatedObjects.push({
+            prompt: inputText,
+            plyURI: plyURI,
+            timestamp: Date.now()
+        });
+        setGenerateObjectsHandler(generatedObjects);
+
         const plyLoader = new PLYLoader();
         plyLoader.load(plyURI, function (geometry) {
 
@@ -501,6 +511,13 @@ export function startGenDemo() {
     async function generateNewEnvironment(inputText) {
 
         const plyURI = await generate3DObject(inputText);
+
+        generatedObjects.push({
+            prompt: inputText,
+            plyURI: plyURI,
+            timestamp: Date.now()
+        });
+        setGenerateObjectsHandler(generatedObjects);
 
         currentEnvironmentPrompt = inputText;
         currentEnvironmentDataURI = plyURI;
