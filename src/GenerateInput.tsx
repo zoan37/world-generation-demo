@@ -62,7 +62,7 @@ function GenerateInput() {
                         }
                     </button>
                 </div>
-                <div className="d-flex">
+                <div className="d-flex mb-2">
                     <input type="text" className="form-control generate_input me-1" placeholder="Object description"
                         value={objDesc}
                         onChange={e => setObjDesc(e.target.value)}
@@ -84,6 +84,14 @@ function GenerateInput() {
                                     </div>
                                 )
                         }
+                    </button>
+                </div>
+                <hr/>
+                <div>
+                    <button className="btn btn-light" type="button"
+                        data-bs-toggle="modal" data-bs-target="#plyViewerModal"
+                    >
+                        View Generation History
                     </button>
                 </div>
             </div>
