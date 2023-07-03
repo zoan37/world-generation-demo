@@ -11,7 +11,3 @@
 .ply_view_table td {
     padding: 10px;
 }
-
-.ply_view_table {
-    table-layout: fixed;
-}

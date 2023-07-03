@@ -8,13 +8,6 @@ const PlyViewer = (
     generatedObjects
   }
 ) => {
-
-  useEffect(() => {
-    console.log('PlyViewer mounted');
-
-    console.log(generatedObjects);
-  }, []);
-
   function downloadPly(object) {
     const prompt = object.prompt;
     const plyURI = object.plyURI;
