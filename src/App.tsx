@@ -4,17 +4,35 @@ import './App.css'
 import { startGenDemo } from "./gen_demo.js";
 import GenerateInput from './GenerateInput.tsx';
 import PlyViewer from './PlyViewer.tsx';
+import Screenshotter from './Screenshotter.tsx';
+
+interface GeneratedObject {
+  id: string;
+  prompt: string;
+  plyURI: string;
+  screenshotDataURI: string;
+}
 
 function App() {
-  const [generatedObjects, setGeneratedObjects] = useState([]);
+  const [generatedObjects, setGeneratedObjects] = useState([] as GeneratedObject[]);
+  const [screenshotObject, setScreenshotObject] = useState({} as GeneratedObject);
+
+  function handleScreenshot(screenshotDataUri: string) {
+    const clonedObjects : GeneratedObject[] = generatedObjects.slice();
+    const screenshotObjectIndex = clonedObjects.findIndex((object) => object.id === screenshotObject.id);
+    clonedObjects[screenshotObjectIndex].screenshotDataURI = screenshotDataUri;
+    setGeneratedObjects(clonedObjects);
+  }
 
   useEffect(() => {
     startGenDemo({
-      setGenerateObjectsHandler: (objects: any) => {
+      setGenerateObjectsHandler: (objects: GeneratedObject[]) => {
         const clonedObjects = objects.slice();
-        
         setGeneratedObjects(clonedObjects);
         console.log('setGeneratedObjects', clonedObjects);
+      },
+      setScreenshotObjectHandler: (object: GeneratedObject) => {
+        setScreenshotObject(object);
       }
     });
   }, []);
@@ -36,6 +54,7 @@ function App() {
         generatedObjects={generatedObjects}
       />
       <GenerateInput />
+      <Screenshotter object={screenshotObject} handleScreenshot={handleScreenshot}/>
       <div>
         <a className="code-button" target="_blank"
           href="https://github.com/zoan37/world-generation-demo"
