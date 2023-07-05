@@ -41,13 +41,17 @@ const PlyViewer = (
                         // canvas contexts, we get the error "WARNING: Too many active WebGL contexts. Oldest context will be lost."
                         // and the main Three.js canvas will go blank.
                         //
-                        // We could display a list of screenshots instead.
+                        // We could display a list of screenshots instead, and enable 3D preview selectively without going over the
+                        // WebGL context limit.
                         /*
                         <td>
                           <CanvasComponent key={object.id} objectLink={object.plyURI} onScreenshotReady={() => null} />
                         </td>
                         */
                       }
+                      <td>
+                        <img src={object.screenshotDataURI} />
+                      </td>
                       <td>
                         {object.prompt}
                       </td>

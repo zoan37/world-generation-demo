@@ -14,6 +14,7 @@ function sleep(ms) {
 
 export function startGenDemo(config) {
     const setGenerateObjectsHandler = config.setGenerateObjectsHandler;
+    const setScreenshotObjectHandler = config.setScreenshotObjectHandler;
 
     const generatedObjects = [];
 
@@ -457,16 +458,22 @@ export function startGenDemo(config) {
 
     window.generateNewObject = generateNewObject;
 
-    async function generateNewObject(inputText) {
-        const plyURI = await generate3DObject(inputText);
-
-        generatedObjects.push({
-            prompt: inputText,
+    function addToGeneratedObjects(prompt, plyURI) {
+        const newObject = {
+            prompt: prompt,
             plyURI: plyURI,
             timestamp: Date.now(),
             id: uuidv4()
-        });
+        };
+        generatedObjects.push(newObject);
         setGenerateObjectsHandler(generatedObjects);
+        setScreenshotObjectHandler(newObject);
+    }
+
+    async function generateNewObject(inputText) {
+        const plyURI = await generate3DObject(inputText);
+
+        addToGeneratedObjects(inputText, plyURI);
 
         const plyLoader = new PLYLoader();
         plyLoader.load(plyURI, function (geometry) {
@@ -498,13 +505,7 @@ export function startGenDemo(config) {
 
         const plyURI = await generate3DObject(inputText);
 
-        generatedObjects.push({
-            prompt: inputText,
-            plyURI: plyURI,
-            timestamp: Date.now(),
-            id: uuidv4()
-        });
-        setGenerateObjectsHandler(generatedObjects);
+        addToGeneratedObjects(inputText, plyURI);
 
         currentEnvironmentPrompt = inputText;
         currentEnvironmentDataURI = plyURI;
