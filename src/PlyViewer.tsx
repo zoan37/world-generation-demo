@@ -36,9 +36,18 @@ const PlyViewer = (
                 <tbody>
                   {generatedObjects.slice().reverse().map((object) => (
                     <tr>
-                      <td>
-                        <CanvasComponent key={object.id} objectLink={object.plyURI} onScreenshotReady={() => null} />
-                      </td>
+                      {
+                        // TODO: We are not displaying a list of CanvasComponents, because when there are too many
+                        // canvas contexts, we get the error "WARNING: Too many active WebGL contexts. Oldest context will be lost."
+                        // and the main Three.js canvas will go blank.
+                        //
+                        // We could display a list of screenshots instead.
+                        /*
+                        <td>
+                          <CanvasComponent key={object.id} objectLink={object.plyURI} onScreenshotReady={() => null} />
+                        </td>
+                        */
+                      }
                       <td>
                         {object.prompt}
                       </td>
