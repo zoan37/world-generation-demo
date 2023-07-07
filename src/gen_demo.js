@@ -415,12 +415,10 @@ export function startGenDemo(config) {
         let ai;
         try {
             ai = await getWindowAI();
-            if (!ai) {
-                alert('window.ai not found');
-                throw new Error('window.ai not found');
-            }
         } catch (error) {
             console.error(error);
+            alert('window.ai not found, please install at https://windowai.io/');
+            return;
         }
 
         console.log('generating...')
