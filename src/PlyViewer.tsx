@@ -60,7 +60,7 @@ const PlyViewer = (
                           onClick={() => {
                             downloadPly(object);
                           }}>
-                          Download
+                          Download .ply
                         </button>
                       </td>
                     </tr>

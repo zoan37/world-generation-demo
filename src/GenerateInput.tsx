@@ -35,6 +35,20 @@ function GenerateInput() {
         setIsObjGenerating(false);
     }
 
+    function handleUploadEnvironmentPly() {
+        console.log("click handleUploadEnvironmentPly");
+
+        // @ts-ignore
+        window.uploadEnvironmentPly();
+    }
+
+    function handleUploadObjectPly() {
+        console.log("click handleUploadObjectPly");
+
+        // @ts-ignore
+        window.uploadObjectPly();
+    }
+
     return (
         <>
             <div className="generate_input_container">
@@ -88,10 +102,20 @@ function GenerateInput() {
                 </div>
                 <hr/>
                 <div>
-                    <button className="btn btn-light" type="button"
+                    <button className="btn btn-light me-2" type="button"
                         data-bs-toggle="modal" data-bs-target="#plyViewerModal"
                     >
                         View Generation History
+                    </button>
+
+                    <input type="file" id="env_ply_upload_input" accept=".ply" style={{display: 'none'}}/> 
+                    <button className="btn btn-light me-2" type="button" id="env_ply_upload_button" onClick={handleUploadEnvironmentPly}>
+                        Upload Environment .ply
+                    </button>
+
+                    <input type="file" id="obj_ply_upload_input" accept=".ply" style={{display: 'none'}}/> 
+                    <button className="btn btn-light" type="button" id="obj_ply_upload_button" onClick={handleUploadObjectPly}>
+                        Upload Object .ply
                     </button>
                 </div>
             </div>
