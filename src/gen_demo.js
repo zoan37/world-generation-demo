@@ -34,8 +34,8 @@ export function startGenDemo(config) {
     // ambient light
     const ambientLight = new THREE.HemisphereLight(0x8dc1de, 0x00668d, 5);
 
-    const directionalLight2 = new THREE.DirectionalLight( 0xffffff, 8 );
-    scene.add( directionalLight2 );
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 8);
+    scene.add(directionalLight2);
 
     // TODO: might have broken shadows because environment is large and the values are too small to account for the range
     const directionalLight = new THREE.DirectionalLight(0xffffff, 2.5);
@@ -54,7 +54,7 @@ export function startGenDemo(config) {
     // scene.add(directionalLight);
 
     const container = document.getElementById('container');
-    
+
     // Reset container because useEffect / Vite will rerun this code.
     // If React.StrictMode is used, this code will run twice.
     // TODO: look into React Three Fiber, maybe help with this
@@ -178,6 +178,46 @@ export function startGenDemo(config) {
         renderer.setSize(window.innerWidth, window.innerHeight);
 
     }
+
+    const env_ply_upload_input = document.getElementById('env_ply_upload_input');
+    const obj_ply_upload_input = document.getElementById('obj_ply_upload_input');
+    // use assignment instead of addEventListener so don't get multiple listeners from Vite / React refresh
+    window.uploadEnvironmentPly = function () {
+        console.log('uploadEnvironmentPly function');
+        // on env_ply_upload_button click, upload a ply file
+        env_ply_upload_input.click();
+    }
+    window.uploadObjectPly = function () {
+        console.log('uploadObjectPly function');
+        // on obj_ply_upload_button click, upload a ply file
+        obj_ply_upload_input.click();
+    }
+    const uploadEnvironmentPlyHandler = function () {
+        if (!this.files.length) {
+            console.log('no files selected')
+            return;
+        } else {
+            const file = this.files[0];
+            const blob = new Blob( [ file ], { type: "application/octet-stream" } );
+			const url = URL.createObjectURL( blob );
+
+            loadNewEnvironment(url);
+        }
+    }
+    env_ply_upload_input.addEventListener('change', uploadEnvironmentPlyHandler);
+    const uploadObjectPlyHandler = function () {
+        if (!this.files.length) {
+            console.log('no files selected  ')
+            return;
+        } else {
+            const file = this.files[0];
+            const blob = new Blob( [ file ], { type: "application/octet-stream" } );
+			const url = URL.createObjectURL( blob );
+
+            loadNewObject(url);
+        }
+    }
+    obj_ply_upload_input.addEventListener('change', uploadObjectPlyHandler);
 
     function throwBall() {
 
@@ -438,21 +478,7 @@ export function startGenDemo(config) {
     };
 
     let currentEnvironmentScene = null;
-    let currentEnvironmentPrompt = null;
-    let currentEnvironmentDataURI = null;
     let octreeHelper = null;
-
-    function saveEnvironmentPly() {
-        const filename = `${currentEnvironmentPrompt}.ply`;
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = currentEnvironmentDataURI;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    window.saveEnvironmentPly = saveEnvironmentPly;
 
     window.generateNewObject = generateNewObject;
 
@@ -473,6 +499,10 @@ export function startGenDemo(config) {
 
         addToGeneratedObjects(inputText, plyURI);
 
+        loadNewObject(plyURI);
+    }
+
+    function loadNewObject(plyURI) {
         const plyLoader = new PLYLoader();
         plyLoader.load(plyURI, function (geometry) {
 
@@ -480,7 +510,7 @@ export function startGenDemo(config) {
 
             geometry.computeVertexNormals();
 
-            var material = new THREE.MeshStandardMaterial({ 
+            var material = new THREE.MeshStandardMaterial({
                 vertexColors: true
             });
             const mesh = new THREE.Mesh(geometry, material);
@@ -500,14 +530,14 @@ export function startGenDemo(config) {
     }
 
     async function generateNewEnvironment(inputText) {
-
         const plyURI = await generate3DObject(inputText);
 
         addToGeneratedObjects(inputText, plyURI);
 
-        currentEnvironmentPrompt = inputText;
-        currentEnvironmentDataURI = plyURI;
+        loadNewEnvironment(plyURI);
+    }
 
+    function loadNewEnvironment(plyURI) {
         if (currentEnvironmentScene) {
             scene.remove(currentEnvironmentScene);
         }
@@ -539,7 +569,7 @@ export function startGenDemo(config) {
 
             geometry.computeVertexNormals();
 
-            var material = new THREE.MeshStandardMaterial({ 
+            var material = new THREE.MeshStandardMaterial({
                 vertexColors: true
             });
             const mesh = new THREE.Mesh(geometry, material);
