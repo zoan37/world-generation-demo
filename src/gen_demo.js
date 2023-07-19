@@ -457,7 +457,7 @@ export function startGenDemo(config) {
             ai = await getWindowAI();
         } catch (error) {
             console.error(error);
-            alert('window.ai not found, please install at https://windowai.io/');
+            alert('window.ai not found, please install at https://windowai.io/ or connect to OpenRouter directly');
             return;
         }
 
