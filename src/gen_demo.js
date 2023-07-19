@@ -7,6 +7,7 @@ import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
 import { Capsule } from 'three/addons/math/Capsule.js';
 import { getWindowAI } from 'window.ai';
 import { v4 as uuidv4 } from 'uuid';
+import Cookies from 'js-cookie';
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -198,8 +199,8 @@ export function startGenDemo(config) {
             return;
         } else {
             const file = this.files[0];
-            const blob = new Blob( [ file ], { type: "application/octet-stream" } );
-			const url = URL.createObjectURL( blob );
+            const blob = new Blob([file], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
 
             loadNewEnvironment(url);
         }
@@ -211,8 +212,8 @@ export function startGenDemo(config) {
             return;
         } else {
             const file = this.files[0];
-            const blob = new Blob( [ file ], { type: "application/octet-stream" } );
-			const url = URL.createObjectURL( blob );
+            const blob = new Blob([file], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
 
             loadNewObject(url);
         }
@@ -452,29 +453,63 @@ export function startGenDemo(config) {
     }
 
     const generate3DObject = async (inputText) => {
-        let ai;
-        try {
-            ai = await getWindowAI();
-        } catch (error) {
-            console.error(error);
-            alert('window.ai not found, please install at https://windowai.io/ or connect to OpenRouter directly');
-            return;
+        const NUM_INFERENCE_STEPS = 16;
+
+        // check if key cookie exists
+        const key = Cookies.get('key');
+        if (key) {
+            // use openrouter
+
+            // get site url without all the ? stuff
+            const APP_URL = window.location.href.split('?')[0];
+
+            const output = await fetch("https://openrouter.ai/api/v1/objects/generations", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + key,
+                    'HTTP-Referer': APP_URL, // To identify your app
+                    'X-Title': 'World Generation Demo'
+                },
+                body: JSON.stringify({
+                    prompt: inputText,
+                    num_inference_steps: NUM_INFERENCE_STEPS,
+                    extension: "ply"
+                })
+            });
+
+            console.log('OpenRouter generate3DObject output', output);
+
+            // TODO: handle diferent models that return a hosted url instead of base64 uri
+
+            return output.generations[0].uri;
+        } else {
+            // use window.ai
+
+            let ai;
+            try {
+                ai = await getWindowAI();
+            } catch (error) {
+                console.error(error);
+                alert('window.ai not found, please install at https://windowai.io/ or connect to OpenRouter directly');
+                return;
+            }
+
+            console.log('generating...')
+
+            const promptObject = { prompt: inputText };
+
+            console.log('promptObject', promptObject);
+
+            const output = await ai.BETA_generate3DObject(promptObject, {
+                extension: "ply",
+                numInferenceSteps: NUM_INFERENCE_STEPS,
+            });
+
+            console.log('generate3DObject output', output);
+
+            return output[0].uri;
         }
-
-        console.log('generating...')
-
-        const promptObject = { prompt: inputText };
-
-        console.log('promptObject', promptObject);
-
-        const output = await ai.BETA_generate3DObject(promptObject, {
-            extension: "ply",
-            numInferenceSteps: 16,
-        });
-
-        console.log('generate3DObject output', output);
-
-        return output[0].uri;
     };
 
     let currentEnvironmentScene = null;
