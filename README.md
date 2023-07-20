@@ -8,7 +8,7 @@
 
 **Discord**: https://discord.gg/7KkS3r5hGK
 
-This is a demo where the user can generate new environments and objects in a 3D world using natural language, and explore the world with FPS controls. It is powered by [window.ai](https://windowai.io/) 3D object generation with OpenAI's [Shap-E](https://github.com/openai/shap-e).
+This is a demo where the user can generate new environments and objects in a 3D world using natural language, and explore the world with FPS controls. It is powered by [OpenRouter](https://openrouter.ai/) / [window.ai](https://windowai.io/) 3D object generation with OpenAI's [Shap-E](https://github.com/openai/shap-e).
 
 You are able to download the generated .ply files, and upload them locally as well. Feel free to share in the [Discord](https://discord.gg/7KkS3r5hGK)!
 
