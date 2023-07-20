@@ -480,9 +480,13 @@ export function startGenDemo(config) {
 
             console.log('OpenRouter generate3DObject output', output);
 
+            const outputJSON = await output.json();
+
+            console.log(outputJSON);
+
             // TODO: handle diferent models that return a hosted url instead of base64 uri
 
-            return output.generations[0].uri;
+            return outputJSON.generations[0].uri;
         } else {
             // use window.ai
 
