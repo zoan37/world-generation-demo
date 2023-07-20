@@ -40,7 +40,7 @@ function App() {
   return (
     <>
       <div className="info-bar">
-        World Generation Demo using <a href="https://windowai.io/" target="_blank">window.ai</a>
+        World Generation Demo using <a href="https://openrouter.ai/" target="_blank">OpenRouter</a> / <a href="https://windowai.io/" target="_blank">window.ai</a>
         <br />
         Generate environments and objects with natural language
         <br />
