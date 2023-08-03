@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
 import GUI from 'three/addons/libs/lil-gui.module.min.js';
 import Stats from 'three/addons/libs/stats.module.js';
@@ -63,7 +64,12 @@ export function startGenDemo(config) {
 
     THREE.ColorManagement.enabled = true;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ 
+        antialias: true,
+        // logarithmicDepthBuffer reduces flickering on edges of loading glb model (that was converted from ply): 
+        // https://stackoverflow.com/questions/63229794/ar-js-flickering-with-loaded-gltf-model
+        logarithmicDepthBuffer: true
+     });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
@@ -600,6 +606,37 @@ export function startGenDemo(config) {
         });
     }
 
+    function loadGlbEnvironment(glbURI, callback) {
+        const gltfLoader = new GLTFLoader();
+        gltfLoader.load(glbURI, function (gltf) {
+
+            gltf.scene.scale.multiplyScalar(100);
+
+            scene.add(gltf.scene);
+
+            worldOctree.fromGraphNode(gltf.scene);
+
+            gltf.scene.traverse(child => {
+
+                if (child.isMesh) {
+
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+
+                    if (child.material.map) {
+
+                        child.material.map.anisotropy = 4;
+
+                    }
+
+                }
+
+            });
+
+            callback();
+        });
+    }
+
     function loadPlyEnvironment(plyURI, callback) {
         const plyLoader = new PLYLoader();
         plyLoader.load(plyURI, function (geometry) {
@@ -659,9 +696,12 @@ export function startGenDemo(config) {
 
         console.log('loading scene');
 
-        const plyURI = './models/ply/an underwater temple.ply'
+        // const plyURI = './models/ply/an underwater temple.ply'
 
-        loadPlyEnvironment(plyURI, () => {
+        // const glbURI = './models/glb/scene.glb';
+        const glbURI = './models/glb/output_scene.glb'
+
+        loadGlbEnvironment(glbURI, () => {
             octreeHelper = new OctreeHelper(worldOctree);
             octreeHelper.visible = false;
             scene.add(octreeHelper);
